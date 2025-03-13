@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 const TextSharing = () => {
@@ -6,64 +6,81 @@ const TextSharing = () => {
   const [code, setCode] = useState("");
   const [isShared, setIsShared] = useState(false);
 
-  const generateCode = () =>
-    Math.random().toString(36).substr(2, 6).toUpperCase();
+  // const generateCode = () =>{
+    // Math.random().toString(36).substr(2, 6).toUpperCase();
+    // console.log(generateCode())
 
-  const handleShare = () => {
-    const newCode = generateCode();
-    setCode(newCode);
+    const generateCode = (length = 6) => {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let code = '';
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        code += characters[randomIndex];
+      }
+      return code
+    };
 
-    if (!text.trim()) {
-      alert("Please enter some text.");
-      return;
-    }
-    axios
-      .post("/api/share", {
+    useEffect(()=>{
+      const newcode = generateCode()
+      setCode(newcode)
+    },[])
+
+    const handleShare = () => {
+
+      if (!text.trim()) {
+        alert("Please enter some text.");
+        return;
+      }
+     
+        apiCall()
+        console.log(code)
+
+
+      //   try {
+
+      //     axios.post("https://jsonplaceholder.typicode.com/posts", {
+      //   title: "My Post",
+      //   body: "This is a test post.",
+      //   userId: 1
+      // })
+      // .then((response) => {
+      //   console.log("Post successful:", response.data);
+      // })
+      // .catch((error) => {
+      //   console.error("Error posting data:", error);
+      // });
+
+      //     // // Simulated API call
+      //     // fetch("/api/share", {
+      //     //   method: "POST",
+      //     //   headers: { "Content-Type": "application/json" },
+      //     //   body: JSON.stringify({ text: text, code: code }),
+      //     // })
+      //     //   .then((res) => console.log("Response:", res))
+      //     //   .then(() => setIsShared(true))
+      //     //   .catch((err) => console.error("Error:", err));
+      //   } catch (err) {
+      //     console.error("Failed to copy:", err);
+      //     alert("Failed to copy code to clipboard");
+      //   }
+    };
+
+    const apiCall = () =>{
+      axios
+      .post('/api/share', {
         text: text,
         code: code,
       })
       .then((response) => {
-        console.log("Response:", response.data);
-        setIsShared(true);
+        console.log('Response:', response.data);
+        setIsShared(true); // Indicate that the code has been shared
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error('Error:', error);
       });
-
-    //   try {
-
-    //     axios.post("https://jsonplaceholder.typicode.com/posts", {
-    //   title: "My Post",
-    //   body: "This is a test post.",
-    //   userId: 1
-    // })
-    // .then((response) => {
-    //   console.log("Post successful:", response.data);
-    // })
-    // .catch((error) => {
-    //   console.error("Error posting data:", error);
-    // });
-
-    //     // // Simulated API call
-    //     // fetch("/api/share", {
-    //     //   method: "POST",
-    //     //   headers: { "Content-Type": "application/json" },
-    //     //   body: JSON.stringify({ text: text, code: code }),
-    //     // })
-    //     //   .then((res) => console.log("Response:", res))
-    //     //   .then(() => setIsShared(true))
-    //     //   .catch((err) => console.error("Error:", err));
-    //   } catch (err) {
-    //     console.error("Failed to copy:", err);
-    //     alert("Failed to copy code to clipboard");
-    //   }
-  };
-
-  const resetSharing = () => {
-    setText("");
-    setCode("");
-    setIsShared(false);
-  };
+    }
+    
+ 
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(code);
@@ -106,7 +123,7 @@ const TextSharing = () => {
                 className="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-2.5 rounded-lg transition-colors font-medium"
                 onClick={handleShare}
               >
-                Generate Share Code
+                Generate Code
               </button>
             </div>
           ) : (
